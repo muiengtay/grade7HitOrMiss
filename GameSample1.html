@@ -1,0 +1,270 @@
+<html>
+<head>
+<title>falling bombs</title>
+<style>
+	canvas{background:#00ecff;display:block;margin:0 auto}
+</style>
+</head>
+<body>
+Controls : arrow left key = move left, arrow right key = move right.
+
+Goal(s): catch bombs falling from sky. Bombs explode/disappear on impact, if it gets through you 
+and reaches the ground you lose a life. You have to get through the first and only level.
+
+
+	
+<canvas id="Canvas" width = '480' height = '320'></canvas>
+<script>
+var canvas = document.getElementById("Canvas");
+var ctx = canvas.getContext("2d");
+var paddleX = (canvas.width - paddleWidth)/2;
+var ballRadius = 20;
+var paddleWidth = 50
+var x = canvas.width/2;
+var y = canvas.height/2;
+var dx = 8;
+var dy = -8;
+var bombRadius = 40;
+var paddleHeight = 30;
+var paddleWidth = 50;
+var paddleX = (canvas.width - paddleWidth)/2; //Note 1 : paddle only moves along x - axis
+var rightPressed = false;
+var leftPressed = false; 
+var score = 0; //the score starts at 0
+var stageWidth = 480;
+var stageHeight = 320;
+var intervalInMilliseconds = 5000;
+var lives = 2; 
+ var paddleY = 307.2
+  var paddleHeight = 10;
+//spawn a new object every 1500ms
+    var spawnRate = 1500;
+    
+    //set how fast the objects will fall
+    var spawnRateOfDescent = 4;
+
+    //when was the last object spawned
+    var lastSpawn = -10;
+
+    //this array holds all spawned object
+    var objects = [];
+
+    //save the starting time(used to calculate relapsed time)
+    var startTime = Date.now();
+
+    function spawnRandomObject() {
+    
+        //select a random type for this new object
+        var t;
+
+        /*All about Math.random()
+        Math.random() generates a semi-random number
+        between 0-1. So to randomly decide if the next object
+        will be A or B, we say if the random# is 0-0.49 we create A and if 
+        random# is 0.5-1.00 we create B*/
+
+       
+   
+        //create the new object   
+        var object = {      
+            
+            //set x randomly but at least 15px off the canvas edge   
+            x: Math.random() * (canvas.width - 30) + 15,
+            //set y to start on the line where the objects are spawned
+            y: 100,
+            //set the radius to 8px
+            r: 8,
+            status: 1
+        }
+     
+     
+        //add the new object to the objects[] array
+        objects.push(object);
+    }
+
+
+    function animate() 
+    {
+        //get the elapsed time
+        var time = Date.now();    
+
+        //check whether it's time to respawn a new object   
+        if (time > (lastSpawn + spawnRate)) {
+            lastSpawn = time;
+            spawnRandomObject();
+    }
+
+        // calculate the boundaries of the paddle
+        var paddleLeft=paddleX;
+        var paddleRight=paddleX+paddleWidth;
+        var paddleTop=paddleY;
+        var paddleBottom=paddleY+paddleHeight;
+      
+        //move each object down the canvas
+        for (var i = 0; i < objects.length; i++) 
+        {
+
+            var object = objects[i];
+            object.y += spawnRateOfDescent;
+             if (object.status == 1){
+            ctx.beginPath();
+            ctx.arc(object.x, object.y, 20, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fillStyle = "black";
+            ctx.fill();
+            }
+      
+            //Collision code starts here           
+
+            // calculate boundaries of this ball
+            var objectTop=object.y-20;
+            var objectBottom=object.y+20;
+            var objectLeft=object.x-20;
+            var objectRight=object.x+20;
+
+            // Collision test: Part 1
+            // Has the ball not yet reached the paddle?
+            if(objectBottom<paddleY){
+                // no collision yet so no collision is happening
+                continue;
+            }
+            // Collision test: Part 2
+            // Has the ball already passed below the paddle?
+            if(objectTop>paddleBottom){
+                // the ball is under the paddle so no collision is happening
+                continue;
+            }
+            // Collision test: Part 3
+            // Is the ball now horizontally over the paddle?
+            if(objectRight>paddleLeft && objectLeft<paddleRight){
+                // ball is colliding with paddle
+                // end the game
+                object.status = 0;
+                score++;
+                //clearInterval(theInterval);
+            				if(y+dy > canvas.height - ballRadius) {
+		
+		if (x > paddleX && x<paddleX+paddleWidth){
+		dy = -dy;
+	}
+            				else{
+	//alert("GAME OVER");
+	//document.location.reload();
+	lives--;
+	if (!lives){
+	alert ("Game over");
+	document.location.reload();
+	}
+	else{
+	x = Canvas.width/2;
+	y = Canvas.height -30;
+	dx = 4;
+	dy = -4;
+	paddleX = (Canvas.width - paddleWidth)/2
+	}
+}
+}
+if (score==240 ){
+		alert ("You Win")
+		document.location.reload();
+	}
+	
+					}
+					
+            //Collision code ends here
+            
+
+     }
+     }
+
+function drawPaddle (){
+	ctx.beginPath();
+	ctx.fillStyle = "#858585";
+	ctx.fillRect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);//(x-coordinate, which is just above )
+	ctx.closePath();
+	}
+	
+
+	
+
+	
+	
+	function drawscore(){
+	ctx.font = "16px Arial";
+	ctx.fillstyle = "#0095DD";
+	ctx.fillText("Score:"+score, 8, 20);//display the text "...", at (8,20)
+	
+	}
+	
+	
+	function drawlives(){
+	ctx.font = "16px Arial";
+	ctx.fillstyle = "#0095DD";
+	ctx.fillText("lives:"+lives, 8, 40);//display the text "...", at (420,20)
+	}
+		
+
+	
+
+
+
+
+//This function will run 'spawnEnemy()' every 'intervalInMilliSeconds'.
+
+
+function move(){
+    if(rightPressed && paddleX < canvas.width-paddleWidth) {
+        paddleX += 4.5;
+    }
+    else if(leftPressed && paddleX > 0) {
+        paddleX -= 4.5;
+    }
+    }
+	
+	
+function draw(){ 
+	ctx.clearRect(0,0,canvas.width,canvas.height);
+	drawPaddle();
+	drawscore();
+	drawlives();
+	animate();
+	move();
+    requestAnimationFrame(draw);
+
+	}
+
+
+x +=dx;
+	y +=dy;
+	if (rightPressed && paddleX < canvas.width - paddleWidth){
+	paddleX+= 4.5;//if rightPressed is true, the paddle moves 7 pixels to the right
+	}
+	else if(leftPressed && paddleX > 0){
+		paddleX-= 4.5;//if leftPressed is true, the paddle moves 7 pixels to the right
+		}
+		requestAnimationFrame(draw);
+document.addEventListener("keydown", function(event){
+	if (event.code == 'ArrowLeft'){
+		leftPressed=true;
+	} else if (event.code == 'ArrowRight'){
+		rightPressed=true;
+		}
+//keydown event code
+
+});
+
+document.addEventListener("keyup", function(event){
+if (event.code == 'ArrowLeft'){
+		leftPressed = false;
+	} else if (event.code == 'ArrowRight'){
+		rightPressed =false;
+	}
+	//keyup event
+
+});	
+
+draw();
+</script>
+</body>
+
+</html>
